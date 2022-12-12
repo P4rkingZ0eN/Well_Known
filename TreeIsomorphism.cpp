@@ -1,3 +1,4 @@
+// Author : Fukuhisa Haruki (Sora Sugiyama)
 #include <bits/stdc++.h>
 using namespace std;
 vector<vector<int> >G1,G2,Vd1,Vd2;
