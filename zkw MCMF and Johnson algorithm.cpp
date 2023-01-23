@@ -81,7 +81,7 @@ int main(){
     for(int i=1;i<=N;i++){
         C[src][i]=1;
         G[src].push_back(i);
-        G[i].push_back(0);
+        G[i].push_back(src);
     }
     for(int i=1;i<=M;i++){
         C[i+400][sink]=1;
