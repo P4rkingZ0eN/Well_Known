@@ -98,4 +98,5 @@ int main(){
         if(!upd())break;
     }
     printf("%lld",res);
+    return 0;
 }
