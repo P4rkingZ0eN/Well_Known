@@ -1,18 +1,21 @@
+// Reference : Justice Hui
 #include <bits/stdc++.h>
 #define fi first
 #define se second
 using namespace std;
 priority_queue<pair<int,int>,vector<pair<int,int> >,greater<pair<int,int> > >pq;
-const int sz=805,src=0,sink=801;
-int C[sz][sz],F[sz][sz],W[sz][sz],h[sz],dist[sz],L[sz];
+// Set your size of graph
+const int sz=2005;
+int src,sink;
+long long C[sz][sz],W[sz][sz],h[sz],dist[sz],L[sz];
 bool A[sz];
 vector<int>G[sz];
 void Johnson(){
     vector<bool>inq(sz,false);
-    fill(h,h+sz,2e9);
-    fill(dist,dist+sz,2e9);
+    fill(h,h+sz,9e17);
+    fill(dist,dist+sz,9e17);
     inq[0]=true;
-    queue<int>q;q.push(0);
+    queue<int>q;q.push(src);
     while(!q.empty()){
         int cur=q.front();q.pop();
         inq[cur]=false;
@@ -33,7 +36,7 @@ void Johnson(){
             if(C[i][k]>0)W[i][k]+=h[i]-h[k];
         }
     }
-    pq.push({0,0});dist[0]=0;
+    pq.push({0,src});dist[src]=0;
     while(!pq.empty()){
         pair<int,int>cur=pq.top();pq.pop();
         if(dist[cur.se]<cur.fi)continue;
@@ -44,10 +47,10 @@ void Johnson(){
             pq.push({dist[nxt],nxt});
         }
     }
-    for(int i=0;i<sz;i++)dist[i]+=h[sink]-h[0];
+    for(int i=0;i<sz;i++)dist[i]+=h[sink]-h[src];
 }
 bool upd(){
-    int mn=2e9;
+    long long mn=9e17;
     for(int i=0;i<sz;i++){
         if(!A[i])continue;
         for(int j=0;j<(int)G[i].size();j++){
@@ -55,19 +58,19 @@ bool upd(){
             if(C[i][k]>0&&(!A[k]))mn=min(mn,dist[i]+W[i][k]-dist[k]);
         }
     }
-    if(mn==2e9)return false;
+    if(mn==9e17)return false;
     for(int i=0;i<sz;i++){
         if(!A[i])dist[i]+=mn;
     }
     return true;
 }
-int dfs(int cur,int flow){
+long long dfs(int cur,long long flow){
     A[cur]=true;
     if(cur==sink)return flow;
     for(;L[cur]<(int)G[cur].size();L[cur]++){
         int nxt=G[cur][L[cur]];
         if(!A[nxt]&&dist[nxt]==dist[cur]+W[cur][nxt]&&C[cur][nxt]>0){
-            int ret=dfs(nxt,min(flow,C[cur][nxt]));
+            long long ret=dfs(nxt,min(flow,C[cur][nxt]));
             if(ret){
                 C[cur][nxt]-=ret;C[nxt][cur]+=ret;
                 return ret;
@@ -77,36 +80,16 @@ int dfs(int cur,int flow){
     return 0;
 }
 int main(){
-    int N,M;scanf("%d%d",&N,&M);
-    for(int i=1;i<=N;i++){
-        C[src][i]=1;
-        G[src].push_back(i);
-        G[i].push_back(src);
-    }
-    for(int i=1;i<=M;i++){
-        C[i+400][sink]=1;
-        G[sink].push_back(i+400);
-        G[i+400].push_back(sink);
-    }
-    for(int i=1;i<=N;i++){
-        int n;scanf("%d",&n);
-        while(n--){
-            int u,w;scanf("%d%d",&u,&w);
-            G[i].push_back(u+400);
-            G[u+400].push_back(i);
-            C[i][u+400]=1;
-            W[i][u+400]=w;
-            W[u+400][i]=-w;
-        }
-    }
-    int res=0,cnt=0;
+    //make your flow network
+    src=1,sink=N+1000;
+    long long res=0,cnt=0;
     Johnson();
     while(1){
         memset(A,false,sizeof(A));
         memset(L,0,sizeof(L));
-        int now=0;
+        long long now=0;
         while(1){
-            now=dfs(src,2e9);
+            now=dfs(src,9e17);
             if(now==0)break;
             res+=dist[sink]*now;
             cnt+=now;
@@ -114,5 +97,5 @@ int main(){
         }
         if(!upd())break;
     }
-    printf("%d\n%d",cnt,res);
+    printf("%lld",res);
 }
